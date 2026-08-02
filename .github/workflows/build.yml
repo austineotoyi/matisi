@@ -2,50 +2,65 @@ name: Android Build
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    defaults:
+      run:
+        working-directory: lo-travel
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: lo-travel
-          path: lo-travel
-
-      - uses: actions/setup-java@v4
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
           cache: gradle
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: "24"
 
-      - uses: android-actions/setup-android@v3
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Reset npm registry
         run: |
+          npm config delete registry || true
           npm config set registry https://registry.npmjs.org/
+          rm -f .npmrc
 
       - name: Install dependencies
-        working-directory: lo-travel
         run: |
           rm -rf node_modules
           npm install
 
-      - name: Build Android
-        working-directory: lo-travel
+      - name: Generate Android project (Expo)
         run: |
-          npx expo prebuild --platform android
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleDebug
+          npx expo prebuild --platform android --non-interactive
 
-      - uses: actions/upload-artifact@v4
+      - name: Make Gradle executable
+        run: chmod +x android/gradlew
+
+      - name: Build Debug APK
+        run: |
+          cd android
+          ./gradlew assembleDebug --stacktrace --no-daemon
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
         with:
-          name: android-apk
+          name: android-debug-apk
           path: lo-travel/android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
