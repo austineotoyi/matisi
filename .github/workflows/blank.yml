@@ -1,0 +1,106 @@
+name: Android APK Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Unzip project archive
+        run: |
+          if [ -f "lo-travel-platform.zip" ]; then
+            mkdir -p lo-travel
+            unzip -q lo-travel-platform.zip -d lo-travel
+
+            # Flatten if ZIP contains a single root directory
+            ROOT_COUNT=$(find lo-travel -mindepth 1 -maxdepth 1 -type d | wc -l)
+            FILE_COUNT=$(find lo-travel -mindepth 1 -maxdepth 1 -type f | wc -l)
+
+            if [ "$ROOT_COUNT" -eq 1 ] && [ "$FILE_COUNT" -eq 0 ]; then
+              ROOT_DIR=$(find lo-travel -mindepth 1 -maxdepth 1 -type d)
+              mv "$ROOT_DIR"/* lo-travel/ || true
+              mv "$ROOT_DIR"/.[!.]* lo-travel/ 2>/dev/null || true
+              rmdir "$ROOT_DIR" || true
+            fi
+          else
+            echo "lo-travel-platform.zip not found."
+            exit 1
+          fi
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Detect package manager and install dependencies
+        working-directory: lo-travel
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            npm install -g pnpm
+            pnpm install --frozen-lockfile
+          elif [ -f yarn.lock ]; then
+            npm install -g yarn
+            yarn install --frozen-lockfile
+          elif [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Make Gradle executable
+        run: chmod +x lo-travel/android/gradlew
+
+      - name: Build Debug APK
+        working-directory: lo-travel/android
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Build Release APK
+        working-directory: lo-travel/android
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: Collect APKs
+        run: |
+          mkdir -p artifacts
+          find lo-travel/android/app/build/outputs -name "*.apk" -exec cp {} artifacts/ \;
+
+      - name: Generate SHA256 Checksums
+        run: |
+          cd artifacts
+          sha256sum *.apk > SHA256SUMS.txt
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-build
+          path: artifacts/
+          if-no-files-found: error
