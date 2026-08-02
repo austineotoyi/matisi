@@ -1,0 +1,51 @@
+name: Android Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: lo-travel
+          path: lo-travel
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Reset npm registry
+        run: |
+          npm config set registry https://registry.npmjs.org/
+
+      - name: Install dependencies
+        working-directory: lo-travel
+        run: |
+          rm -rf node_modules
+          npm install
+
+      - name: Build Android
+        working-directory: lo-travel
+        run: |
+          npx expo prebuild --platform android
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: lo-travel/android/app/build/outputs/apk/debug/*.apk
