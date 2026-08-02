@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "lotravel",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "cover",
@@ -24,11 +24,17 @@
         "backgroundColor": "#1C2374"
       }
     },
+    
     "web": {
       "favicon": "./assets/images/icon.png"
     },
     "plugins": [
       "expo-font"
     ]
+  }
+}
+{
+  "expo": {
+    "newArchEnabled": true
   }
 }
