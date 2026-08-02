@@ -25,7 +25,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Extract project
+        shell: bash
         run: |
+          set -e
+
           if [ ! -f "lo-travel-platform.zip" ]; then
             echo "ERROR: lo-travel-platform.zip not found."
             exit 1
@@ -33,20 +36,20 @@ jobs:
 
           rm -rf lo-travel
           mkdir -p lo-travel
+
           unzip -q lo-travel-platform.zip -d lo-travel
 
-          # Flatten if the ZIP contains a single root directory
           ROOT_DIR=$(find lo-travel -mindepth 1 -maxdepth 1 -type d | head -n1)
           DIR_COUNT=$(find lo-travel -mindepth 1 -maxdepth 1 -type d | wc -l)
           FILE_COUNT=$(find lo-travel -mindepth 1 -maxdepth 1 -type f | wc -l)
 
           if [ "$DIR_COUNT" = "1" ] && [ "$FILE_COUNT" = "0" ]; then
             shopt -s dotglob
-            mv "$ROOT_DIR"/* lo-travel/ || true
+            mv "$ROOT_DIR"/* lo-travel/
             rmdir "$ROOT_DIR" || true
           fi
 
-      - name: Fix file permissions
+      - name: Fix Permissions
         run: |
           chmod -R u+rwX lo-travel
           find lo-travel -type d -exec chmod 755 {} \;
@@ -54,7 +57,7 @@ jobs:
           find lo-travel -name gradlew -exec chmod +x {} \;
           find lo-travel -name "*.sh" -exec chmod +x {} \;
 
-      - name: Setup Java 17
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -66,49 +69,59 @@ jobs:
         with:
           node-version: "24"
           cache: npm
+          cache-dependency-path: lo-travel/package-lock.json
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install dependencies
+      - name: Install Dependencies
         working-directory: lo-travel
+        shell: bash
         run: |
-          if [ -f pnpm-lock.yaml ]; then
-            npm install -g pnpm
-            pnpm install
+          set -e
+
+          if [ -f package-lock.json ]; then
+            npm ci
           elif [ -f yarn.lock ]; then
             npm install -g yarn
-            yarn install
-          elif [ -f package-lock.json ]; then
-            npm ci
+            yarn install --frozen-lockfile
+          elif [ -f pnpm-lock.yaml ]; then
+            npm install -g pnpm
+            pnpm install --frozen-lockfile
           else
             npm install
           fi
 
-      - name: Verify Android project
+      - name: Verify Android Project
         run: |
           test -f lo-travel/android/gradlew
-          test -f lo-travel/android/app/build.gradle || test -f lo-travel/android/app/build.gradle.kts
+
+          if [ ! -f lo-travel/android/app/build.gradle ] && [ ! -f lo-travel/android/app/build.gradle.kts ]; then
+            echo "Android build.gradle not found."
+            exit 1
+          fi
 
       - name: Build Debug APK
         working-directory: lo-travel/android
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+        run: |
+          ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Build Release APK
         working-directory: lo-travel/android
-        run: ./gradlew assembleRelease --no-daemon --stacktrace
+        run: |
+          ./gradlew assembleRelease --no-daemon --stacktrace
 
       - name: Collect APKs
         run: |
           mkdir -p artifacts
           find lo-travel/android/app/build/outputs -name "*.apk" -exec cp {} artifacts/ \;
 
-      - name: Generate SHA256
+      - name: Generate SHA256 Checksums
         run: |
           cd artifacts
           sha256sum *.apk > SHA256SUMS.txt
 
-      - name: Upload APKs
+      - name: Upload APK Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: android-build
