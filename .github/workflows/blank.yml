@@ -1,129 +1,31 @@
-name: Android APK Build
+name: Extract Project
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-      - master
-      - develop
-  pull_request:
-    branches:
-      - main
-      - master
-
-permissions:
-  contents: read
 
 jobs:
-  build-android:
+  unzip:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Extract project
-        shell: bash
+      - name: Extract ZIP
         run: |
-          set -e
-
-          if [ ! -f "lo-travel-platform.zip" ]; then
-            echo "ERROR: lo-travel-platform.zip not found."
-            exit 1
-          fi
-
           rm -rf lo-travel
-          mkdir -p lo-travel
-
+          mkdir lo-travel
           unzip -q lo-travel-platform.zip -d lo-travel
 
-          ROOT_DIR=$(find lo-travel -mindepth 1 -maxdepth 1 -type d | head -n1)
-          DIR_COUNT=$(find lo-travel -mindepth 1 -maxdepth 1 -type d | wc -l)
-          FILE_COUNT=$(find lo-travel -mindepth 1 -maxdepth 1 -type f | wc -l)
-
-          if [ "$DIR_COUNT" = "1" ] && [ "$FILE_COUNT" = "0" ]; then
-            shopt -s dotglob
-            mv "$ROOT_DIR"/* lo-travel/
-            rmdir "$ROOT_DIR" || true
-          fi
-
-      - name: Fix Permissions
+      - name: Remove Replit files
         run: |
-          chmod -R u+rwX lo-travel
-          find lo-travel -type d -exec chmod 755 {} \;
-          find lo-travel -type f -exec chmod 644 {} \;
-          find lo-travel -name gradlew -exec chmod +x {} \;
-          find lo-travel -name "*.sh" -exec chmod +x {} \;
+          rm -f lo-travel/.npmrc
+          rm -f lo-travel/.yarnrc
+          rm -f lo-travel/.yarnrc.yml
+          find lo-travel -name ".replit" -delete
+          find lo-travel -name "replit.nix" -delete
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
-          cache: gradle
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-          cache: npm
-          cache-dependency-path: lo-travel/package-lock.json
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Dependencies
-        working-directory: lo-travel
-        shell: bash
-        run: |
-          set -e
-
-          if [ -f package-lock.json ]; then
-            npm ci
-          elif [ -f yarn.lock ]; then
-            npm install -g yarn
-            yarn install --frozen-lockfile
-          elif [ -f pnpm-lock.yaml ]; then
-            npm install -g pnpm
-            pnpm install --frozen-lockfile
-          else
-            npm install
-          fi
-
-      - name: Verify Android Project
-        run: |
-          test -f lo-travel/android/gradlew
-
-          if [ ! -f lo-travel/android/app/build.gradle ] && [ ! -f lo-travel/android/app/build.gradle.kts ]; then
-            echo "Android build.gradle not found."
-            exit 1
-          fi
-
-      - name: Build Debug APK
-        working-directory: lo-travel/android
-        run: |
-          ./gradlew assembleDebug --no-daemon --stacktrace
-
-      - name: Build Release APK
-        working-directory: lo-travel/android
-        run: |
-          ./gradlew assembleRelease --no-daemon --stacktrace
-
-      - name: Collect APKs
-        run: |
-          mkdir -p artifacts
-          find lo-travel/android/app/build/outputs -name "*.apk" -exec cp {} artifacts/ \;
-
-      - name: Generate SHA256 Checksums
-        run: |
-          cd artifacts
-          sha256sum *.apk > SHA256SUMS.txt
-
-      - name: Upload APK Artifacts
+      - name: Upload extracted project
         uses: actions/upload-artifact@v4
         with:
-          name: android-build
-          path: artifacts/
-          if-no-files-found: error
+          name: lo-travel
+          path: lo-travel
