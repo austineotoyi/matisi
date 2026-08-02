@@ -4,28 +4,40 @@ on:
   workflow_dispatch:
 
 jobs:
-  unzip:
+  extract:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Extract ZIP
+        shell: bash
         run: |
+          set -e
+
           rm -rf lo-travel
-          mkdir lo-travel
-          unzip -q lo-travel-platform.zip -d lo-travel
+          mkdir -p lo-travel
+
+          unzip -oq lo-travel-platform.zip -d lo-travel
 
       - name: Remove Replit files
+        shell: bash
         run: |
-          rm -f lo-travel/.npmrc
-          rm -f lo-travel/.yarnrc
-          rm -f lo-travel/.yarnrc.yml
-          find lo-travel -name ".replit" -delete
-          find lo-travel -name "replit.nix" -delete
+          rm -f lo-travel/.npmrc || true
+          rm -f lo-travel/.yarnrc || true
+          rm -f lo-travel/.yarnrc.yml || true
+          rm -f lo-travel/.replit || true
+          rm -f lo-travel/replit.nix || true
 
-      - name: Upload extracted project
-        uses: actions/upload-artifact@v4
+      - name: Fix permissions
+        shell: bash
+        run: |
+          chmod -R u+rwX lo-travel || true
+
+      - name: List extracted files
+        run: ls -laR lo-travel | head -500
+
+      - uses: actions/upload-artifact@v4
         with:
-          name: lo-travel
+          name: extracted-project
           path: lo-travel
