@@ -1,78 +1,49 @@
-name: Auto Unzip Archive
+name: Regenerate package-lock.json
 
 on:
-  push:
-    paths:
-      - "*.zip"
-      - "**/*.zip"
   workflow_dispatch:
 
 jobs:
-  unzip:
+  clean-lockfile:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
+    defaults:
+      run:
+        working-directory: lo-travel
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
+          node-version: "24"
 
-      - name: Install unzip
+      - name: Reset npm configuration
         run: |
-          sudo apt-get update
-          sudo apt-get install -y unzip
+          set -e
 
-      - name: Extract ZIP archives
+          rm -f .npmrc
+          rm -f package-lock.json
+          rm -rf node_modules
+
+          npm config delete registry || true
+          npm config set registry https://registry.npmjs.org/
+
+          npm cache clean --force
+
+      - name: Install dependencies and generate lock file
         run: |
-          shopt -s nullglob
+          npm install
 
-          for zip in *.zip **/*.zip; do
-            [ -f "$zip" ] || continue
-
-            echo "Extracting $zip..."
-            unzip -o "$zip"
-
-            rm -f "$zip"
-          done
-
-      - name: Fix extracted file permissions
+      - name: Verify lock file
         run: |
-          if [ -d "lo-travel" ]; then
-            echo "Fixing permissions..."
+          test -f package-lock.json
+          echo "package-lock.json successfully generated."
 
-            sudo chown -R "$USER:$USER" lo-travel || true
-
-            chmod -R u+rwX lo-travel
-            find lo-travel -type d -exec chmod 755 {} \;
-            find lo-travel -type f -exec chmod 644 {} \;
-
-            chmod +x lo-travel/android/gradlew || true
-            chmod +x lo-travel/gradlew || true
-
-            echo "Permissions fixed."
-          fi
-
-      - name: Show extracted files
-        run: |
-          pwd
-          ls -la
-          echo ""
-          find lo-travel -maxdepth 2 -type f | head -50
-
-      - name: Commit extracted files
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add .
-
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-            exit 0
-          fi
-
-          git commit -m "Automatically extracted ZIP archive"
-          git push
+      - name: Upload regenerated package-lock.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-lock
+          path: lo-travel/package-lock.json
