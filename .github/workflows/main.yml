@@ -1,0 +1,83 @@
+name: Auto Unzip Archive
+
+on:
+  push:
+    paths:
+      - "*.zip"
+      - "**/*.zip"
+  workflow_dispatch:
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install unzip
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip
+
+      - name: Extract ZIP archives
+        run: |
+          shopt -s nullglob globstar
+
+          for zip in *.zip **/*.zip; do
+            [ -f "$zip" ] || continue
+
+            # Determine the target directory (extracts into the directory containing the zip)
+            target_dir=$(dirname "$zip")
+
+            echo "Extracting $zip into $target_dir..."
+            unzip -o "$zip" -d "$target_dir"
+
+            # Remove the processed zip archive
+            rm -f "$zip"
+          done
+
+      - name: Fix extracted file permissions
+        run: |
+          if [ -d "lo-travel" ]; then
+            echo "Fixing permissions..."
+
+            sudo chown -R "$USER:$USER" lo-travel || true
+
+            chmod -R u+rwX lo-travel
+            find lo-travel -type d -exec chmod 755 {} \;
+            find lo-travel -type f -exec chmod 644 {} \;
+
+            # Make Gradle wrapper executable wherever it lands
+            find lo-travel -name "gradlew" -exec chmod +x {} \;
+
+            echo "Permissions fixed."
+          fi
+
+      - name: Show extracted files
+        run: |
+          pwd
+          ls -la
+          echo ""
+          find lo-travel -maxdepth 3 | head -50
+
+      - name: Commit extracted files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add .
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Automatically extracted ZIP archive"
+          git push
+          
