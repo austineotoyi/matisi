@@ -1,0 +1,4 @@
+[
+  { "ticketId": "LO-TK-001", "subject": "Refund not received", "status": "open", "priority": "high", "createdAt": "2026-07-25T09:00:00Z" },
+  { "ticketId": "LO-TK-002", "subject": "Change passenger name", "status": "resolved", "priority": "medium", "createdAt": "2026-07-18T09:00:00Z" }
+]

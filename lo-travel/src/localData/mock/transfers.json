@@ -1,0 +1,6 @@
+[
+  { "transferId": "LO-TF-5001", "type": "Standard Taxi", "capacity": 3, "bags": 2, "pickupEta": "10 min", "price": 18.0, "currency": "USD", "rating": 4.5 },
+  { "transferId": "LO-TF-5002", "type": "Executive Sedan", "capacity": 3, "bags": 3, "pickupEta": "12 min", "price": 35.0, "currency": "USD", "rating": 4.8 },
+  { "transferId": "LO-TF-5003", "type": "SUV", "capacity": 5, "bags": 5, "pickupEta": "15 min", "price": 48.0, "currency": "USD", "rating": 4.7 },
+  { "transferId": "LO-TF-5004", "type": "Shared Shuttle", "capacity": 8, "bags": 8, "pickupEta": "25 min", "price": 9.0, "currency": "USD", "rating": 4.2 }
+]

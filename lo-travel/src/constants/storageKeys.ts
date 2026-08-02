@@ -1,0 +1,16 @@
+export const STORAGE_KEYS = {
+  AUTH_TOKEN: '@lo/auth_token',
+  USER_PROFILE: '@lo/user_profile',
+  THEME: '@lo/theme',
+  LANGUAGE: '@lo/language',
+  CURRENCY: '@lo/currency',
+  ONBOARDING_SEEN: '@lo/onboarding_seen',
+  SAVED_TRAVELERS: '@lo/saved_travelers',
+  WISHLIST: '@lo/wishlist',
+  BOOKINGS: '@lo/bookings',
+  WALLET: '@lo/wallet',
+  NOTIFICATIONS: '@lo/notifications',
+  RECENT_SEARCHES: '@lo/recent_searches',
+  SETTINGS: '@lo/settings',
+  FAVORITES: '@lo/favorites',
+} as const;

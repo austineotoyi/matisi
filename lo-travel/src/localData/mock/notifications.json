@@ -1,0 +1,5 @@
+[
+  { "id": "N1", "type": "booking", "title": "Booking Confirmed", "message": "Your flight NBO → DXB is confirmed.", "read": false, "createdAt": "2026-07-28T10:00:00Z" },
+  { "id": "N2", "type": "promotion", "title": "Flash Sale", "message": "20% off flights to Dubai this week.", "read": false, "createdAt": "2026-07-27T08:00:00Z" },
+  { "id": "N3", "type": "flightStatus", "title": "Check-in Open", "message": "Check-in is now open for KQ001.", "read": true, "createdAt": "2026-07-26T09:00:00Z" }
+]

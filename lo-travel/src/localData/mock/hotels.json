@@ -1,0 +1,62 @@
+[
+  {
+    "hotelId": "LO-HT-2001",
+    "name": "Address Downtown Dubai",
+    "city": "Dubai",
+    "rating": 4.8,
+    "reviews": 3210,
+    "pricePerNight": 210.0,
+    "currency": "USD",
+    "distanceFromAirport": "18 min",
+    "distanceFromCenter": "0.2 km",
+    "freeBreakfast": true,
+    "freeCancellation": true,
+    "category": "luxury",
+    "image": "hotel_address_downtown"
+  },
+  {
+    "hotelId": "LO-HT-2002",
+    "name": "Rove City Centre",
+    "city": "Dubai",
+    "rating": 4.4,
+    "reviews": 1876,
+    "pricePerNight": 78.0,
+    "currency": "USD",
+    "distanceFromAirport": "12 min",
+    "distanceFromCenter": "1.1 km",
+    "freeBreakfast": false,
+    "freeCancellation": true,
+    "category": "budget",
+    "image": "hotel_rove"
+  },
+  {
+    "hotelId": "LO-HT-2003",
+    "name": "Jumeirah Beach Family Resort",
+    "city": "Dubai",
+    "rating": 4.6,
+    "reviews": 2450,
+    "pricePerNight": 165.0,
+    "currency": "USD",
+    "distanceFromAirport": "28 min",
+    "distanceFromCenter": "6.4 km",
+    "freeBreakfast": true,
+    "freeCancellation": true,
+    "category": "family",
+    "image": "hotel_jumeirah"
+  },
+  {
+    "hotelId": "LO-HT-2004",
+    "name": "Business Bay Executive Suites",
+    "city": "Dubai",
+    "rating": 4.2,
+    "reviews": 980,
+    "pricePerNight": 132.0,
+    "currency": "USD",
+    "distanceFromAirport": "22 min",
+    "distanceFromCenter": "2.0 km",
+    "freeBreakfast": true,
+    "freeCancellation": false,
+    "category": "business",
+    "image": "hotel_business_bay"
+  }
+]

@@ -1,0 +1,6 @@
+[
+  { "tourId": "LO-TR-3001", "title": "Dubai Desert Safari", "city": "Dubai", "category": "Adventure", "duration": "6 hours", "price": 65.0, "currency": "USD", "rating": 4.9, "groupSize": "Up to 12", "instantConfirmation": true, "image": "tour_desert_safari" },
+  { "tourId": "LO-TR-3002", "title": "Burj Khalifa At The Top", "city": "Dubai", "category": "City Tours", "duration": "2 hours", "price": 45.0, "currency": "USD", "rating": 4.7, "groupSize": "Any", "instantConfirmation": true, "image": "tour_burj_khalifa" },
+  { "tourId": "LO-TR-3003", "title": "Dhow Cruise Dinner", "city": "Dubai", "category": "Cruises", "duration": "3 hours", "price": 55.0, "currency": "USD", "rating": 4.6, "groupSize": "Up to 40", "instantConfirmation": true, "image": "tour_dhow_cruise" },
+  { "tourId": "LO-TR-3004", "title": "Old Dubai Food Walk", "city": "Dubai", "category": "Food Experiences", "duration": "3.5 hours", "price": 38.0, "currency": "USD", "rating": 4.8, "groupSize": "Up to 10", "instantConfirmation": false, "image": "tour_food_walk" }
+]

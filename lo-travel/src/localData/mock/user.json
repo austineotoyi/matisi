@@ -1,0 +1,28 @@
+{
+  "userId": "LO-USR-0001",
+  "fullName": "Amara Otieno",
+  "email": "amara.otieno@example.com",
+  "phone": "+254712345678",
+  "nationality": "Kenya",
+  "language": "en",
+  "currency": "USD",
+  "loyaltyPoints": 3200,
+  "walletBalance": 145.5,
+  "passport": {
+    "number": "A1234567",
+    "issueCountry": "Kenya",
+    "issueDate": "2022-04-10",
+    "expiryDate": "2032-04-09"
+  },
+  "savedTravelers": [
+    { "id": "T1", "fullName": "Amara Otieno", "dob": "1994-03-12", "passport": "A1234567", "nationality": "Kenya" }
+  ],
+  "savedCards": [
+    { "id": "C1", "brand": "Visa", "last4": "4242", "expiry": "08/28" }
+  ],
+  "savedAddresses": [
+    { "id": "AD1", "label": "Home", "line1": "14 Riverside Drive", "city": "Nairobi", "country": "Kenya" },
+    { "id": "AD2", "label": "Work", "line1": "Britam Tower, Hospital Road", "city": "Nairobi", "country": "Kenya" }
+  ]
+}
+

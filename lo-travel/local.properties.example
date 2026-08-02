@@ -1,0 +1,21 @@
+## Android SDK Location — local.properties.example
+##
+## Copy this file to android/local.properties and set sdk.dir to your
+## local Android SDK installation path.
+##
+## This file MUST be named "local.properties" (not ".example") when placed
+## in the android/ directory. It is git-ignored and should never be committed.
+
+## macOS (default Android Studio install):
+# sdk.dir=/Users/YOUR_USERNAME/Library/Android/sdk
+
+## Linux (default Android Studio install):
+# sdk.dir=/home/YOUR_USERNAME/Android/Sdk
+
+## Windows (note: use double backslashes or forward slashes):
+# sdk.dir=C\:\\Users\\YOUR_USERNAME\\AppData\\Local\\Android\\Sdk
+# OR
+# sdk.dir=C:/Users/YOUR_USERNAME/AppData/Local/Android/Sdk
+
+## CI / Docker (set via environment variable instead):
+# sdk.dir=/opt/android-sdk

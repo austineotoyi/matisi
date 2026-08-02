@@ -1,0 +1,5 @@
+[
+  { "planId": "LO-INS-BASIC", "name": "Basic", "price": 12.0, "currency": "USD", "coverage": ["Medical Coverage", "Flight Delay", "Lost Baggage"], "coverageAmount": "$15,000", "deductible": "$50" },
+  { "planId": "LO-INS-STANDARD", "name": "Standard", "price": 24.0, "currency": "USD", "coverage": ["Everything in Basic", "Trip Cancellation", "Emergency Assistance"], "coverageAmount": "$50,000", "deductible": "$25", "badge": "Most Popular" },
+  { "planId": "LO-INS-PREMIUM", "name": "Premium", "price": 42.0, "currency": "USD", "coverage": ["Worldwide Medical Coverage", "Trip Interruption", "Adventure Sports", "Family Coverage", "Concierge Assistance"], "coverageAmount": "$150,000", "deductible": "$0", "badge": "Best Value" }
+]

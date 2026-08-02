@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "LO Travel",
+    "slug": "lo-travel",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "lotravel",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": false,
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#1C2374"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.lotravelplatform"
+    },
+    "android": {
+      "package": "com.lotravelplatform",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#1C2374"
+      }
+    },
+    "web": {
+      "favicon": "./assets/images/icon.png"
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}

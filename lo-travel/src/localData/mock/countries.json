@@ -1,0 +1,10 @@
+[
+  { "iso": "KE", "name": "Kenya", "phonecode": "254" },
+  { "iso": "AE", "name": "United Arab Emirates", "phonecode": "971" },
+  { "iso": "US", "name": "United States", "phonecode": "1" },
+  { "iso": "GB", "name": "United Kingdom", "phonecode": "44" },
+  { "iso": "NG", "name": "Nigeria", "phonecode": "234" },
+  { "iso": "ZA", "name": "South Africa", "phonecode": "27" },
+  { "iso": "FR", "name": "France", "phonecode": "33" },
+  { "iso": "IN", "name": "India", "phonecode": "91" }
+]

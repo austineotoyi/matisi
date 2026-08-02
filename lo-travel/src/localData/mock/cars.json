@@ -1,0 +1,5 @@
+[
+  { "carId": "LO-CR-4001", "type": "Economy", "model": "Toyota Corolla", "seats": 4, "bags": 2, "pricePerDay": 32.0, "currency": "USD", "transmission": "Automatic", "image": "car_economy" },
+  { "carId": "LO-CR-4002", "type": "SUV", "model": "Toyota RAV4", "seats": 5, "bags": 4, "pricePerDay": 58.0, "currency": "USD", "transmission": "Automatic", "image": "car_suv" },
+  { "carId": "LO-CR-4003", "type": "Luxury", "model": "Mercedes E-Class", "seats": 4, "bags": 3, "pricePerDay": 120.0, "currency": "USD", "transmission": "Automatic", "image": "car_luxury" }
+]
