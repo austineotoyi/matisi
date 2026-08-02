@@ -6,61 +6,59 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     defaults:
       run:
         shell: bash
 
     steps:
-      # Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Setup Java
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
-          cache: gradle
 
-      # Setup Node
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "24"
           cache: npm
           cache-dependency-path: lo-travel/package-lock.json
 
-      # Setup Android SDK
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      # Clean any Replit configuration
-      - name: Clean npm configuration
+      - name: Remove Replit npm configuration
         working-directory: lo-travel
         run: |
           rm -f .npmrc
           npm config delete registry || true
+          npm config delete proxy || true
+          npm config delete https-proxy || true
           npm config set registry https://registry.npmjs.org/
-          npm config set fund false
-          npm config set audit false
 
-      # Verify npm registry
-      - name: Verify npm registry
-        run: npm config get registry
+      - name: Verify npm
+        run: |
+          node -v
+          npm -v
+          npm config get registry
 
-      # Clean project
       - name: Clean project
         working-directory: lo-travel
         run: |
           rm -rf node_modules
           rm -rf android
 
-      # Install dependencies
       - name: Install dependencies
         working-directory: lo-travel
         env:
@@ -68,32 +66,55 @@ jobs:
         run: |
           npm ci
 
-      # Generate fresh native Android project
-      - name: Expo Prebuild
+      - name: Verify Expo installation
+        working-directory: lo-travel
+        run: |
+          npx expo --version
+
+      - name: Run Expo Doctor
+        working-directory: lo-travel
+        run: |
+          npx expo-doctor || true
+
+      - name: Check Expo package versions
+        working-directory: lo-travel
+        run: |
+          npx expo install --check || true
+
+      - name: Generate Android project
         working-directory: lo-travel
         env:
           NODE_ENV: production
         run: |
           npx expo prebuild --platform android --clean --non-interactive
 
-      # Verify New Architecture
       - name: Verify gradle.properties
         run: |
-          echo "===== gradle.properties ====="
+          echo "=============================="
           cat lo-travel/android/gradle.properties
+          echo "=============================="
 
-      # Build APK
-      - name: Build Debug APK
+      - name: Build APK
         working-directory: lo-travel/android
         env:
           NODE_ENV: production
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          ./gradlew clean
+          ./gradlew assembleDebug --stacktrace --warning-mode all --no-daemon
 
-      # Upload APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: android-apk
           path: lo-travel/android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload Gradle Reports
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: gradle-reports
+          path: |
+            lo-travel/android/build/reports/**
+            lo-travel/android/app/build/reports/**
