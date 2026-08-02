@@ -53,7 +53,12 @@ jobs:
       - name: Bundle JS Assets
         run: |
           mkdir -p android/app/src/main/assets
-          npx expo export:embed --platform android --dev false --asset-catalog-dest android/app/src/main/res
+          npx expo export:embed \
+            --platform android \
+            --dev false \
+            --entry-file index.js \
+            --bundle-output android/app/src/main/assets/index.android.bundle \
+            --assets-dest android/app/src/main/res
 
       - name: Make Gradle executable
         run: chmod +x android/gradlew
@@ -69,4 +74,3 @@ jobs:
           name: android-debug-apk
           path: lo-travel/android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
-          
