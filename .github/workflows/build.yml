@@ -50,23 +50,13 @@ jobs:
         run: |
           npx expo prebuild --platform android --non-interactive
 
-      - name: Bundle JS Assets
-        run: |
-          mkdir -p android/app/src/main/assets
-          npx expo export:embed \
-            --platform android \
-            --dev false \
-            --entry-file index.js \
-            --bundle-output android/app/src/main/assets/index.android.bundle \
-            --assets-dest android/app/src/main/res
-
       - name: Make Gradle executable
         run: chmod +x android/gradlew
 
-      - name: Build Debug APK
+      - name: Build Debug APK with embedded JS bundle
         run: |
           cd android
-          ./gradlew assembleDebug --stacktrace --no-daemon
+          ./gradlew assembleDebug -PBUNDLE_IN_APP=true --stacktrace --no-daemon
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
@@ -74,3 +64,4 @@ jobs:
           name: android-debug-apk
           path: lo-travel/android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+          
